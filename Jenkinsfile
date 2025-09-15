@@ -57,7 +57,7 @@ pipeline {
                         # Restart Tomcat service
                         ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "sudo systemctl restart tomcat"
 
-                        echo "Deployment completed successfully!"
+                        echo "Deployment completed successfully, without error"
                     '''
                 }
             }
