@@ -27,8 +27,8 @@ pipeline {
                             mvn clean verify \
                             org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar \
                             -Dsonar.projectKey=webapp \
-                            -Dsonar.projectName=webapp 
-                            
+                            -Dsonar.projectName=webapp \
+                            -Dsonar.java.binaries=target/classes 
                         '''
                     }
                 }
