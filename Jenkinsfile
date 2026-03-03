@@ -18,7 +18,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'jenkinspv1',
+                git branch: 'main',
                     url: 'https://github.com/Namitha2000/test_fork.git'
             }
         }
