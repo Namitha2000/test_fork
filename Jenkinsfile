@@ -12,7 +12,7 @@ pipeline {
 
     environment {
         SONARQUBE_URL = "http://${params.SONAR_IP}:9000"
-        SONARQUBE_TOKEN = credentials('Sonarqube ID') 
+        SONARQUBE_TOKEN = credentials('SonarQube') 
     }
 
     stages {
