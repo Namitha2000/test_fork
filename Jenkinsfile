@@ -22,14 +22,15 @@ pipeline {
             steps {
                 echo "Running SonarQube analysis"
                  dir('sample-app') {
-            withSonarQubeEnv('SonarQube') {
-                sh '''
-                   mvn clean verify sonar:sonar \
+                 withSonarQubeEnv('SonarQube') {
+                 sh '''
+                   mvn clean verify \
+                   org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar \
                    -Dsonar.projectKey=webapp \
-                   -Dsonar.projectName=webapp
+                   -Dsonar.projectName=webapp 
                 '''
-            }
-        }  
+               }
+              }  
                     
             }
         }
