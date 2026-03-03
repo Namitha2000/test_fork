@@ -6,49 +6,41 @@ pipeline {
         maven 'maven3'
     }
 
-    parameters {   
-        string(name: 'SONAR_IP', defaultValue: '13.50.246.94', description: 'IP of SonarQube server')
-    }
-
     environment {
-        SONARQUBE_URL = "http://${params.SONAR_IP}:9000"
-        SONARQUBE_TOKEN = credentials('sonar-token') 
+        SONAR_SERVER = 'SonarQube'
     }
 
     stages {
+
         stage('Checkout Code') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/Namitha2000/test_fork.git'
-            }
-        }
-
-        stage('Build') {
-            steps {
-                dir('sample-app') {
-                    sh 'mvn clean package -DskipTests'
-                }
+                echo "Checking out source code"
+                git url: 'https://github.com/Namitha2000/test_fork.git', branch: 'main'
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                dir('sample-app') {
-                    sh """
-                           mvn verify sonar:sonar \
-                          -Dsonar.projectKey=sample-app \
-                          -Dsonar.host.url=$SONARQUBE_URL \
-                          -Dsonar.login=$SONARQUBE_TOKEN \
-                          -Dsonar.coverage.exclusions=**
-                    """
+                echo "Running SonarQube analysis"
+                withSonarQubeEnv('SonarQube') {
+                    dir('sample-app') {
+                        sh '''
+                            mvn clean verify sonar:sonar \
+                            -Dsonar.projectKey=webapp \
+                            -Dsonar.projectName=webapp
+                        '''
+                    }
                 }
             }
         }
-    }
 
-    post {
-        always {
-            echo "Pipeline finished."
+        stage('Build') {
+            steps {
+                echo "Building the project"
+                dir('sample-app') {
+                    sh 'mvn clean package -DskipTests'
+                }
+            }
         }
+        
     }
-}
