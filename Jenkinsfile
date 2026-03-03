@@ -26,9 +26,7 @@ pipeline {
                         sh '''
                             mvn clean verify sonar:sonar \
                             -Dsonar.projectKey=webapp \
-                            -Dsonar.projectName=webapp \
-                            -Dsonar.host.url=$SONAR_HOST_URL \
-                            -Dsonar.login=$SONAR_AUTH_TOKEN
+                            -Dsonar.projectName=webapp 
                         '''
                     }
                 }
