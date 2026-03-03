@@ -24,7 +24,8 @@ pipeline {
                 withSonarQubeEnv('SonarQube') {
                     dir('sample-app') {
                         sh '''
-                            mvn clean verify sonar:sonar \
+                            mvn clean verify \
+                            org.sonarsource.scanner.maven:sonar-maven-plugin:3.11.0.3922:sonar \
                             -Dsonar.projectKey=webapp \
                             -Dsonar.projectName=webapp 
                         '''
