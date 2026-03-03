@@ -35,7 +35,7 @@ pipeline {
             steps {
                 dir('sample-app') {
                     sh """
-                        mvn sonar:sonar \
+                        mvn clean install sonar:sonar \
                           -Dsonar.projectKey=sample-app \
                           -Dsonar.host.url=$SONARQUBE_URL \
                           -Dsonar.login=$SONARQUBE_TOKEN
