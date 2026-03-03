@@ -35,10 +35,11 @@ pipeline {
             steps {
                 dir('sample-app') {
                     sh """
-                        mvn clean install sonar:sonar \
+                           mvn sonar:sonar \
                           -Dsonar.projectKey=sample-app \
                           -Dsonar.host.url=$SONARQUBE_URL \
-                          -Dsonar.login=$SONARQUBE_TOKEN
+                          -Dsonar.login=$SONARQUBE_TOKEN \
+                          -Dsonar.coverage.jacoco.xmlReportPaths=""
                     """
                 }
             }
