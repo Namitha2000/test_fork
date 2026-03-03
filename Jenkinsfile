@@ -21,15 +21,16 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 echo "Running SonarQube analysis"
-                withSonarQubeEnv('SonarQube') {
-                   
-                        sh '''
-                            mvn clean verify sonar:sonar \
-                            -Dsonar.projectKey=webapp \
-                            -Dsonar.projectName=webapp 
-                        '''
+                 dir('sample-app') {
+            withSonarQubeEnv('SonarQube') {
+                sh '''
+                   mvn clean verify sonar:sonar \
+                   -Dsonar.projectKey=webapp \
+                   -Dsonar.projectName=webapp
+                '''
+            }
+        }  
                     
-                }
             }
         }
 
