@@ -6,11 +6,8 @@ pipeline {
         maven 'maven3'
     }
 
-    environment {
-        SONAR_SERVER = 'SonarQube'
-    }
-
     stages {
+
         stage('Checkout Code') {
             steps {
                 echo "Checking out source code"
@@ -18,33 +15,29 @@ pipeline {
             }
         }
 
-  stage('Build & SonarQube Analysis') {
+        stage('SonarQube Analysis') {
             steps {
-                // Ensure we are working inside the project folder where pom.xml is located
-                dir('sample-app') {
-                    
-                    // 1. Build the project and skip tests to save time
-                    sh 'mvn clean verify -DskipTests'
+                echo "Running SonarQube analysis"
 
-                    script {
-                        // 2. Inject SonarQube environment variables
-                        // Note: Using 'SonarQube' to match your exact System Configuration name
-                        withSonarQubeEnv('SonarQube') {
-                            
-                            // 3. Run SonarQube Scan using the stable plugin version 3.9.1.2184
-                            // This bypasses the communication bug in the default 4.0.0 version
-                            sh '''
-                                mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184:sonar \
-                                -Dsonar.projectKey=webapp \
-                                -Dsonar.projectName=webapp \
-                                -Dsonar.working.directory=target/sonar
-                            '''
-                        }
+                withSonarQubeEnv('SonarQube') {
+                    dir('sample-app') {
+                        sh '''
+                        mvn sonar:sonar \
+                        -Dsonar.projectKey=webapp \
+                        -Dsonar.projectName=webapp
+                        '''
                     }
                 }
             }
         }
 
-
-    } // Closes stages
-} // Closes pipeline
+        stage('Build') {
+            steps {
+                echo "Building application"
+                dir('sample-app') {
+                    sh 'mvn clean package'
+                }
+            }
+        }
+    }
+}
