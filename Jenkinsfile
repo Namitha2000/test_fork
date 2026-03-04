@@ -21,19 +21,21 @@ pipeline {
 stage('SonarQube Analysis') {
     steps {
         echo "Running SonarQube analysis"
-        // 1. First, build the project to generate the target folder
+
         dir('sample-app') {
-            sh 'mvn clean verify -DskipTests'
+            sh 'mvn clean verify'
         }
-        
-        // 2. Then, run the scanner separately
+
         withSonarQubeEnv('SonarQube') {
             dir('sample-app') {
-                sh 'mvn sonar:sonar -Dsonar.projectKey=webapp -Dsonar.projectName=webapp'
+                sh '''
+                mvn org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar \
+                -Dsonar.projectKey=webapp \
+                -Dsonar.projectName=webapp
+                '''
             }
         }
     }
 }
-
     } // Closes stages
 } // Closes pipeline
