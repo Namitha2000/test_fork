@@ -21,10 +21,15 @@ pipeline {
         stage('Build & SonarQube Analysis') {
             steps {
                 echo "Building and running SonarQube analysis"
-                withSonarQubeEnv('SonarQube') {
-                    dir('sample-app') {
-                        // Combining clean, verify, and sonar:sonar in a single Maven command
-                        sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=webapp -Dsonar.projectName=webapp'
+                // dir block must be OUTSIDE withSonarQubeEnv so Jenkins finds the report
+                dir('sample-app') { 
+                    withSonarQubeEnv('SonarQube') {
+                        sh '''
+                        mvn clean verify sonar:sonar \
+                        -Dsonar.projectKey=webapp \
+                        -Dsonar.projectName=webapp \
+                        -Dsonar.working.directory=target/sonar
+                        '''
                     }
                 }
             }
