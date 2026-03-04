@@ -18,34 +18,23 @@ pipeline {
             }
         }
 
-    stage('Build & SonarQube Analysis') {
+     stage('Build & SonarQube Analysis') {
     steps {
         dir('sample-app') {
-            // 1. Build first
+            // 1. Build the WAR file normally
             sh 'mvn clean verify -DskipTests'
-            
+
+            // 2. Use the dedicated Scanner Tool (Ensure 'sonar-scanner' is configured in Global Tool Configuration)
             withSonarQubeEnv('SonarQube') {
-                // 2. FORCE: Create the file right before the scan starts
-                sh '''
-                mkdir -p target/sonar
-                echo "projectKey=webapp" > target/sonar/report-task.txt
-                chmod 777 target/sonar/report-task.txt
-                '''
-                
-                // 3. Run scan with absolute paths
-                sh '''
-                mvn sonar:sonar \
-                -Dsonar.projectKey=webapp \
-                -Dsonar.projectName=webapp \
-                -Dsonar.working.directory=target/sonar \
-                -Dsonar.scm.provider=git
-                '''
+                def sonarqubeScanner = tool 'sonar-scanner' 
+                sh "${sonarqubeScanner}/bin/sonar-scanner \
+                    -Dsonar.projectKey=webapp \
+                    -Dsonar.sources=. \
+                    -Dsonar.java.binaries=target/classes"
             }
         }
     }
 }
-
-
 
     } // Closes stages
 } // Closes pipeline
