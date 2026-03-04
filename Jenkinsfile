@@ -18,7 +18,7 @@ pipeline {
             }
         }
 
-stage('SonarQube Analysis') {
+     stage('SonarQube Analysis') {
     steps {
         echo "Running SonarQube analysis"
 
@@ -31,11 +31,14 @@ stage('SonarQube Analysis') {
                 sh '''
                 mvn org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar \
                 -Dsonar.projectKey=webapp \
-                -Dsonar.projectName=webapp
+                -Dsonar.projectName=webapp \
+                -Dsonar.host.url=$SONAR_HOST_URL \
+                -Dsonar.login=$SONAR_AUTH_TOKEN
                 '''
             }
         }
     }
 }
-    } // Closes stages
+
+} //Closes stages
 } // Closes pipeline
