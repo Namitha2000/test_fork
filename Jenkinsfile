@@ -18,27 +18,34 @@ pipeline {
             }
         }
 
-       stage('Build & SonarQube Analysis') {
+    stage('Build & SonarQube Analysis') {
     steps {
-        echo "Building and running SonarQube analysis"
-        dir('sample-app') { 
-            // 1. Run clean and verify first to generate the target folder
+        dir('sample-app') {
+            // 1. Build first
             sh 'mvn clean verify -DskipTests'
             
-            // 2. FORCE: Re-create the directory and file after 'clean' has deleted them
-            sh '''
-            mkdir -p target/sonar
-            touch target/sonar/report-task.txt
-            chmod 777 target/sonar/report-task.txt
-            '''
-            
-            // 3. Now run the Sonar scan
             withSonarQubeEnv('SonarQube') {
-                sh 'mvn sonar:sonar -Dsonar.projectKey=webapp -Dsonar.projectName=webapp -Dsonar.working.directory=target/sonar'
+                // 2. FORCE: Create the file right before the scan starts
+                sh '''
+                mkdir -p target/sonar
+                echo "projectKey=webapp" > target/sonar/report-task.txt
+                chmod 777 target/sonar/report-task.txt
+                '''
+                
+                // 3. Run scan with absolute paths
+                sh '''
+                mvn sonar:sonar \
+                -Dsonar.projectKey=webapp \
+                -Dsonar.projectName=webapp \
+                -Dsonar.working.directory=target/sonar \
+                -Dsonar.scm.provider=git
+                '''
             }
         }
     }
-}    
+}
+
+
 
     } // Closes stages
 } // Closes pipeline
