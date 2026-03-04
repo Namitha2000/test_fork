@@ -18,29 +18,22 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                echo "Running SonarQube analysis"
-                 dir('sample-app') {
-                 withSonarQubeEnv('SonarQube') {
-                 sh '''
-                   mvn clean verify sonar:sonar \
-                   -Dsonar.projectKey=webapp \
-                   -Dsonar.projectName=webapp 
-                '''
-               }
-              }  
-                    
+stage('SonarQube Analysis') {
+    steps {
+        echo "Running SonarQube analysis"
+        // 1. First, build the project to generate the target folder
+        dir('sample-app') {
+            sh 'mvn clean verify -DskipTests'
+        }
+        
+        // 2. Then, run the scanner separately
+        withSonarQubeEnv('SonarQube') {
+            dir('sample-app') {
+                sh 'mvn sonar:sonar -Dsonar.projectKey=webapp -Dsonar.projectName=webapp'
             }
         }
+    }
+}
 
-        stage('Build') {
-            steps {
-                echo "Building the project"
-                dir('sample-app') {
-                    sh 'mvn clean package -DskipTests'
-                }
-            }
-        }
     } // Closes stages
 } // Closes pipeline
