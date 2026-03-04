@@ -18,23 +18,27 @@ pipeline {
             }
         }
 
-     stage('Build & SonarQube Analysis') {
+    stage('Build & SonarQube Analysis') {
     steps {
         dir('sample-app') {
-            // 1. Build the WAR file normally
+            // 1. Build the WAR
             sh 'mvn clean verify -DskipTests'
 
-            // 2. Use the dedicated Scanner Tool (Ensure 'sonar-scanner' is configured in Global Tool Configuration)
-            withSonarQubeEnv('SonarQube') {
-                def sonarqubeScanner = tool 'sonar-scanner' 
-                sh "${sonarqubeScanner}/bin/sonar-scanner \
+            script {
+                // 2. Inject Sonar Env and Run Scan
+                withSonarQubeEnv('SonarQube') {
+                    sh '''
+                    mvn sonar:sonar \
                     -Dsonar.projectKey=webapp \
-                    -Dsonar.sources=. \
-                    -Dsonar.java.binaries=target/classes"
+                    -Dsonar.projectName=webapp \
+                    -Dsonar.working.directory=target/sonar \
+                    -Dsonar.scanner.skipEmptyReport=true
+                    '''
+                }
             }
         }
     }
-}
+}    
 
     } // Closes stages
 } // Closes pipeline
