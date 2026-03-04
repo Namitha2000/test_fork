@@ -19,15 +19,17 @@ pipeline {
         }
 
         stage('Build & SonarQube Analysis') {
-            steps {
-                echo "Building and running SonarQube analysis"
-                withSonarQubeEnv('SonarQube') {
-                    dir('sample-app') {
-                        // Combining clean, verify, and sonar:sonar in a single Maven command
-                        sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=webapp -Dsonar.projectName=webapp'
-                    }
-                }
+    steps {
+        echo "Building and running SonarQube analysis"
+        // Move to the directory FIRST
+        dir('sample-app') { 
+            // Then inject the environment
+            withSonarQubeEnv('SonarQube') {
+                sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=webapp -Dsonar.projectName=webapp'
             }
         }
-    } // Closes stages
+    }
+}  
+  
+  } // Closes stages
 } // Closes pipeline
