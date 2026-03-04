@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        SONAR_SERVER = 'SonarQube'
+        SONAR_SERVER = 'SonarQube' // Name configured in Jenkins SonarQube plugin
     }
 
     stages {
@@ -18,22 +18,21 @@ pipeline {
             }
         }
 
-    stage('Build & SonarQube Analysis') {
-    steps {
-        echo "Building and running SonarQube analysis"
-        dir('sample-app') { 
-            withSonarQubeEnv('SonarQube') {
-                sh '''
-                mvn clean verify sonar:sonar \
-                -Dsonar.projectKey=webapp \
-                -Dsonar.projectName=webapp \
-                -Dsonar.working.directory=target/sonar
-                '''
+        stage('Build & SonarQube Analysis') {
+            steps {
+                echo "Building and running SonarQube analysis"
+                dir('sample-app') {
+                    withSonarQubeEnv('SonarQube') {
+                        sh '''
+                        mvn clean verify sonar:sonar \
+                        -Dsonar.projectKey=sample \
+                        -Dsonar.projectName=sample \
+                        -Dsonar.host.url=$SONAR_HOST_URL \
+                        -Dsonar.login=$SONAR_AUTH_TOKEN
+                        '''
+                    }
+                }
             }
         }
     }
-} 
-
- 
-  } // Closes stages
-} // Closes pipeline
+}
