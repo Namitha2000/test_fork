@@ -18,27 +18,21 @@ pipeline {
             }
         }
 
-     stage('SonarQube Analysis') {
+        stage('SonarQube Analysis') {
     steps {
         echo "Running SonarQube analysis"
-
-        dir('sample-app') {
-            sh 'mvn clean verify'
-        }
 
         withSonarQubeEnv('SonarQube') {
             dir('sample-app') {
                 sh '''
-                mvn org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar \
+                mvn clean verify sonar:sonar \
                 -Dsonar.projectKey=webapp \
-                -Dsonar.projectName=webapp \
-                -Dsonar.host.url=$SONAR_HOST_URL \
-                -Dsonar.login=$SONAR_AUTH_TOKEN
+                -Dsonar.projectName=webapp
                 '''
             }
         }
     }
-}
+}    
 
 } //Closes stages
 } // Closes pipeline
